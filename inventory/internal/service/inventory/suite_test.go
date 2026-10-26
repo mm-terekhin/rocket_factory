@@ -8,10 +8,12 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+func testCtx() context.Context {
+	return context.Background()
+}
+
 type ServiceSuite struct {
 	suite.Suite
-
-	ctx context.Context
 
 	inventoryRepository *mocks.InventoryRepository
 
@@ -19,8 +21,6 @@ type ServiceSuite struct {
 }
 
 func (s *ServiceSuite) SetupTest() {
-	s.ctx = context.Background()
-
 	s.inventoryRepository = mocks.NewInventoryRepository(s.T())
 
 	s.service = NewService(s.inventoryRepository)

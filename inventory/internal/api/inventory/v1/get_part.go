@@ -9,7 +9,6 @@ import (
 
 func (a *inventoryApi) GetPart(ctx context.Context, req *inventoryV1.GetPartRequest) (*inventoryV1.GetPartResponse, error) {
 	part, err := a.inventoryService.GetPart(ctx, req.GetUuid())
-
 	if err != nil {
 		return nil, err
 	}

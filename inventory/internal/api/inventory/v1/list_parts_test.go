@@ -30,12 +30,12 @@ func (s *APISuite) TestSuccessListParts() {
 		},
 	}
 
-	s.inventoryService.On("ListParts", s.ctx, filter).Return(parts, nil)
+	s.inventoryService.On("ListParts", testCtx(), filter).Return(parts, nil)
 	expected := make([]*inventoryV1.Part, 0, len(parts))
 	for _, p := range parts {
 		expected = append(expected, converter.PartToProto(p))
 	}
-	res, err := s.api.ListParts(s.ctx, req)
+	res, err := s.api.ListParts(testCtx(), req)
 	s.Require().NoError(err)
 	s.Require().NotEmpty(res)
 
@@ -63,9 +63,9 @@ func (s *APISuite) TestFailureListParts() {
 		},
 	}
 
-	s.inventoryService.On("ListParts", s.ctx, filter).Return(make([]model.Part, 0), serviceErr)
+	s.inventoryService.On("ListParts", testCtx(), filter).Return(make([]model.Part, 0), serviceErr)
 
-	res, err := s.api.ListParts(s.ctx, req)
+	res, err := s.api.ListParts(testCtx(), req)
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, serviceErr)
 	s.Require().Empty(res)

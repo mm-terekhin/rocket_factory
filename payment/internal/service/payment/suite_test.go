@@ -7,15 +7,17 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+func testCtx() context.Context {
+	return context.Background()
+}
+
 type ServiceSuite struct {
 	suite.Suite
 
-	ctx     context.Context
 	service *service
 }
 
 func (s *ServiceSuite) SetupTest() {
-	s.ctx = context.Background()
 	s.service = NewService()
 }
 

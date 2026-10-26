@@ -48,9 +48,9 @@ func (s *ServiceSuite) TestSuccessGetPart() {
 		}
 	)
 
-	s.inventoryRepository.On("GetPart", s.ctx, uuid).Return(part, nil)
+	s.inventoryRepository.On("GetPart", testCtx(), uuid).Return(part, nil)
 
-	res, err := s.service.GetPart(s.ctx, uuid)
+	res, err := s.service.GetPart(testCtx(), uuid)
 	s.Require().NoError(err)
 	s.Require().NotNil(res)
 	s.Require().Equal(part, res)
@@ -59,13 +59,13 @@ func (s *ServiceSuite) TestSuccessGetPart() {
 func (s *ServiceSuite) TestFailureGetPart() {
 	var (
 		uuid        = gofakeit.UUID()
-		notFoundErr = model.ErrorPartNotFound
+		notFoundErr = model.ErrPartNotFound
 		part        = model.Part{}
 	)
 
-	s.inventoryRepository.On("GetPart", s.ctx, uuid).Return(part, notFoundErr)
+	s.inventoryRepository.On("GetPart", testCtx(), uuid).Return(part, notFoundErr)
 
-	res, err := s.service.GetPart(s.ctx, uuid)
+	res, err := s.service.GetPart(testCtx(), uuid)
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, notFoundErr)
 	s.Require().Equal(res, part)

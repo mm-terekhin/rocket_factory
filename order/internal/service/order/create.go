@@ -69,5 +69,4 @@ func (s *service) Create(ctx context.Context, data model.CreateOrderData) (*mode
 	}
 
 	return &order, nil
-
 }

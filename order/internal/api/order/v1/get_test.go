@@ -17,9 +17,9 @@ func (s *APISuite) TestSuccessGetOrderByUUID() {
 		Status:     string(model.StatusPendingPayment),
 	}
 
-	s.orderService.On("Get", s.ctx, orderUUID).Return(order, nil)
+	s.orderService.On("Get", testCtx(), orderUUID).Return(order, nil)
 
-	res, err := s.api.GetOrderByUUID(s.ctx, orderV1.GetOrderByUUIDParams{OrderUUID: orderUUID})
+	res, err := s.api.GetOrderByUUID(testCtx(), orderV1.GetOrderByUUIDParams{OrderUUID: orderUUID})
 
 	s.Require().NoError(err)
 	s.Require().Equal(converter.OrderToResponse(order), res)
@@ -28,9 +28,9 @@ func (s *APISuite) TestSuccessGetOrderByUUID() {
 func (s *APISuite) TestFailureGetOrderByUUID_NotFound() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderService.On("Get", s.ctx, orderUUID).Return(nil, model.ErrorOrderNotFound)
+	s.orderService.On("Get", testCtx(), orderUUID).Return(nil, model.ErrOrderNotFound)
 
-	res, err := s.api.GetOrderByUUID(s.ctx, orderV1.GetOrderByUUIDParams{OrderUUID: orderUUID})
+	res, err := s.api.GetOrderByUUID(testCtx(), orderV1.GetOrderByUUIDParams{OrderUUID: orderUUID})
 
 	s.Require().NoError(err)
 	nf, ok := res.(*orderV1.NotFoundError)

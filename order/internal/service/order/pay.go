@@ -29,5 +29,4 @@ func (s *service) Pay(ctx context.Context, input model.PayOrderInput) (*string, 
 	}
 
 	return order.TransactionUUID, nil
-
 }

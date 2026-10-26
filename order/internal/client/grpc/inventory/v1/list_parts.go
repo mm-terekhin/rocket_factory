@@ -12,7 +12,6 @@ func (c *client) ListParts(ctx context.Context, filter model.PartsFilter) ([]mod
 	resp, err := c.generatedClient.ListParts(ctx, &generatedInventoryV1.ListPartsRequest{
 		Filter: clientConverter.PartsFilterToProto(filter),
 	})
-
 	if err != nil {
 		return nil, err
 	}

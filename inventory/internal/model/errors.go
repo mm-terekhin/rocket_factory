@@ -2,4 +2,4 @@ package model
 
 import "errors"
 
-var ErrorPartNotFound = errors.New("part not found")
+var ErrPartNotFound = errors.New("part not found")

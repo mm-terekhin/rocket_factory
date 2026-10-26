@@ -15,9 +15,9 @@ func (s *ServiceSuite) TestSuccessGet() {
 		Status:     string(model.StatusPendingPayment),
 	}
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(expected)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(expected)
 
-	res, err := s.service.Get(s.ctx, orderUUID)
+	res, err := s.service.Get(testCtx(), orderUUID)
 
 	s.Require().NoError(err)
 	s.Require().Equal(expected, res)
@@ -26,11 +26,11 @@ func (s *ServiceSuite) TestSuccessGet() {
 func (s *ServiceSuite) TestFailureGet_NotFound() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(nil)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(nil)
 
-	res, err := s.service.Get(s.ctx, orderUUID)
+	res, err := s.service.Get(testCtx(), orderUUID)
 
 	s.Require().Error(err)
-	s.Require().ErrorIs(err, model.ErrorOrderNotFound)
+	s.Require().ErrorIs(err, model.ErrOrderNotFound)
 	s.Require().Nil(res)
 }

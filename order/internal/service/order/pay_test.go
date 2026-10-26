@@ -16,20 +16,20 @@ func (s *ServiceSuite) TestSuccessPay() {
 		Status:    string(model.StatusPendingPayment),
 	}
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(order)
-	s.paymentClient.On("PayOrder", s.ctx, model.PayOrderData{
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.paymentClient.On("PayOrder", testCtx(), model.PayOrderData{
 		OrderUUID:     orderUUID,
 		UserUuid:      userUUID,
 		PaymentMethod: model.PaymentMethodCard,
 	}).Return(txUUID, nil)
-	s.orderRepository.On("UpdateOrder", s.ctx, mock.MatchedBy(func(o model.Order) bool {
+	s.orderRepository.On("UpdateOrder", testCtx(), mock.MatchedBy(func(o model.Order) bool {
 		return o.OrderUUID == orderUUID &&
 			o.Status == string(model.StatusPaid) &&
 			o.TransactionUUID != nil &&
 			*o.TransactionUUID == txUUID
 	})).Return(nil)
 
-	res, err := s.service.Pay(s.ctx, model.PayOrderInput{
+	res, err := s.service.Pay(testCtx(), model.PayOrderInput{
 		OrderUUID:     orderUUID,
 		PaymentMethod: model.PaymentMethodCard,
 	})
@@ -42,12 +42,12 @@ func (s *ServiceSuite) TestSuccessPay() {
 func (s *ServiceSuite) TestFailurePay_NotFound() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(nil)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(nil)
 
-	res, err := s.service.Pay(s.ctx, model.PayOrderInput{OrderUUID: orderUUID})
+	res, err := s.service.Pay(testCtx(), model.PayOrderInput{OrderUUID: orderUUID})
 
 	s.Require().Error(err)
-	s.Require().ErrorIs(err, model.ErrorOrderNotFound)
+	s.Require().ErrorIs(err, model.ErrOrderNotFound)
 	s.Require().Nil(res)
 }
 
@@ -56,10 +56,10 @@ func (s *ServiceSuite) TestFailurePay_PaymentError() {
 	order := &model.Order{OrderUUID: orderUUID, UserUUID: gofakeit.UUID()}
 	serviceErr := gofakeit.Error()
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(order)
-	s.paymentClient.On("PayOrder", s.ctx, mock.Anything).Return("", serviceErr)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.paymentClient.On("PayOrder", testCtx(), mock.Anything).Return("", serviceErr)
 
-	res, err := s.service.Pay(s.ctx, model.PayOrderInput{OrderUUID: orderUUID})
+	res, err := s.service.Pay(testCtx(), model.PayOrderInput{OrderUUID: orderUUID})
 
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, serviceErr)
@@ -73,11 +73,11 @@ func (s *ServiceSuite) TestFailurePay_UpdateError() {
 	order := &model.Order{OrderUUID: orderUUID, UserUUID: userUUID}
 	serviceErr := gofakeit.Error()
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(order)
-	s.paymentClient.On("PayOrder", s.ctx, mock.Anything).Return(txUUID, nil)
-	s.orderRepository.On("UpdateOrder", s.ctx, mock.Anything).Return(serviceErr)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.paymentClient.On("PayOrder", testCtx(), mock.Anything).Return(txUUID, nil)
+	s.orderRepository.On("UpdateOrder", testCtx(), mock.Anything).Return(serviceErr)
 
-	res, err := s.service.Pay(s.ctx, model.PayOrderInput{OrderUUID: orderUUID})
+	res, err := s.service.Pay(testCtx(), model.PayOrderInput{OrderUUID: orderUUID})
 
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, serviceErr)

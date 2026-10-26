@@ -12,7 +12,7 @@ func (s *ServiceSuite) TestSuccessPay() {
 		PaymentMethod: model.Card,
 	}
 
-	res, err := s.service.Pay(s.ctx, input)
+	res, err := s.service.Pay(testCtx(), input)
 
 	s.Require().NoError(err)
 	s.Require().NotNil(res)
@@ -20,7 +20,7 @@ func (s *ServiceSuite) TestSuccessPay() {
 }
 
 func (s *ServiceSuite) TestFailurePay_EmptyOrderUUID() {
-	_, err := s.service.Pay(s.ctx, model.PayOrderInput{
+	_, err := s.service.Pay(testCtx(), model.PayOrderInput{
 		UserUuid:      gofakeit.UUID(),
 		PaymentMethod: model.Card,
 	})
@@ -28,7 +28,7 @@ func (s *ServiceSuite) TestFailurePay_EmptyOrderUUID() {
 }
 
 func (s *ServiceSuite) TestFailurePay_EmptyUserUUID() {
-	_, err := s.service.Pay(s.ctx, model.PayOrderInput{
+	_, err := s.service.Pay(testCtx(), model.PayOrderInput{
 		OrderUuid:     gofakeit.UUID(),
 		PaymentMethod: model.Card,
 	})
@@ -36,7 +36,7 @@ func (s *ServiceSuite) TestFailurePay_EmptyUserUUID() {
 }
 
 func (s *ServiceSuite) TestFailurePay_UnspecifiedPaymentMethod() {
-	_, err := s.service.Pay(s.ctx, model.PayOrderInput{
+	_, err := s.service.Pay(testCtx(), model.PayOrderInput{
 		OrderUuid:     gofakeit.UUID(),
 		UserUuid:      gofakeit.UUID(),
 		PaymentMethod: model.Unspecified,

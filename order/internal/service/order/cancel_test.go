@@ -16,12 +16,12 @@ func (s *ServiceSuite) TestSuccessCancel() {
 		Status:     string(model.StatusPendingPayment),
 	}
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(order)
-	s.orderRepository.On("UpdateOrder", s.ctx, mock.MatchedBy(func(o model.Order) bool {
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.orderRepository.On("UpdateOrder", testCtx(), mock.MatchedBy(func(o model.Order) bool {
 		return o.OrderUUID == orderUUID && o.Status == string(model.StatusCancelled)
 	})).Return(nil)
 
-	res, err := s.service.Cancel(s.ctx, orderUUID)
+	res, err := s.service.Cancel(testCtx(), orderUUID)
 
 	s.Require().NoError(err)
 	s.Require().NotNil(res)
@@ -31,12 +31,12 @@ func (s *ServiceSuite) TestSuccessCancel() {
 func (s *ServiceSuite) TestFailureCancel_NotFound() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(nil)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(nil)
 
-	res, err := s.service.Cancel(s.ctx, orderUUID)
+	res, err := s.service.Cancel(testCtx(), orderUUID)
 
 	s.Require().Error(err)
-	s.Require().ErrorIs(err, model.ErrorOrderNotFound)
+	s.Require().ErrorIs(err, model.ErrOrderNotFound)
 	s.Require().Nil(res)
 }
 
@@ -47,12 +47,12 @@ func (s *ServiceSuite) TestFailureCancel_Conflict() {
 		Status:    string(model.StatusPaid),
 	}
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(order)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
 
-	res, err := s.service.Cancel(s.ctx, orderUUID)
+	res, err := s.service.Cancel(testCtx(), orderUUID)
 
 	s.Require().Error(err)
-	s.Require().ErrorIs(err, model.ErrorOrderConflict)
+	s.Require().ErrorIs(err, model.ErrOrderConflict)
 	s.Require().Nil(res)
 }
 
@@ -64,10 +64,10 @@ func (s *ServiceSuite) TestFailureCancel_UpdateError() {
 	}
 	serviceErr := gofakeit.Error()
 
-	s.orderRepository.On("GetOrder", s.ctx, orderUUID).Return(order)
-	s.orderRepository.On("UpdateOrder", s.ctx, mock.Anything).Return(serviceErr)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.orderRepository.On("UpdateOrder", testCtx(), mock.Anything).Return(serviceErr)
 
-	res, err := s.service.Cancel(s.ctx, orderUUID)
+	res, err := s.service.Cancel(testCtx(), orderUUID)
 
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, serviceErr)

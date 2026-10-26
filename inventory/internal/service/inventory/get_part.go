@@ -8,7 +8,6 @@ import (
 
 func (s *service) GetPart(ctx context.Context, uuid string) (model.Part, error) {
 	part, err := s.InventoryRepository.GetPart(ctx, uuid)
-
 	if err != nil {
 		return model.Part{}, err
 	}

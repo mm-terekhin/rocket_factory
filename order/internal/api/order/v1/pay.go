@@ -15,7 +15,6 @@ func (a *orderApi) PayOrderByUUID(ctx context.Context, req *orderV1.PayOrderRequ
 		OrderUUID:     params.OrderUUID,
 		PaymentMethod: method,
 	})
-
 	if err != nil {
 		return mapPayErr(err, params.OrderUUID)
 	}

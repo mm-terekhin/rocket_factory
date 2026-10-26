@@ -4,11 +4,15 @@ import (
 	"context"
 	"testing"
 
+	inventoryV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/inventory/v1"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	inventoryV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/inventory/v1"
 	"google.golang.org/grpc"
 )
+
+func testCtx() context.Context {
+	return context.Background()
+}
 
 type inventoryGRPCMock struct {
 	mock.Mock
@@ -33,13 +37,11 @@ func (m *inventoryGRPCMock) CreatePart(ctx context.Context, in *inventoryV1.Crea
 type ClientSuite struct {
 	suite.Suite
 
-	ctx    context.Context
 	grpc   *inventoryGRPCMock
 	client *client
 }
 
 func (s *ClientSuite) SetupTest() {
-	s.ctx = context.Background()
 	s.grpc = new(inventoryGRPCMock)
 	s.client = NewClient(s.grpc)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -34,16 +35,22 @@ const (
 )
 
 func main() {
+	if err := run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func run() error {
 	invConn, err := grpc.NewClient(
 		inventoryAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalf("failed to connect: %v\n", err)
+		return fmt.Errorf("inventory grpc connect: %w", err)
 	}
 	defer func() {
 		if cerr := invConn.Close(); cerr != nil {
-			log.Printf("Failed to close listener %v\n", cerr)
+			log.Printf("failed to close inventory connection: %v\n", cerr)
 		}
 	}()
 
@@ -54,11 +61,11 @@ func main() {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	)
 	if err != nil {
-		log.Fatalf("failed to connect: %v\n", err)
+		return fmt.Errorf("payment grpc connect: %w", err)
 	}
 	defer func() {
 		if cerr := payConn.Close(); cerr != nil {
-			log.Printf("Failed to close listener %v\n", cerr)
+			log.Printf("failed to close payment connection: %v\n", cerr)
 		}
 	}()
 
@@ -70,7 +77,7 @@ func main() {
 
 	ordersServer, err := orderV1.NewServer(api)
 	if err != nil {
-		log.Fatalf("ошибка создания сервера OpenAPI: %v", err)
+		return fmt.Errorf("openapi server: %w", err)
 	}
 
 	r := chi.NewRouter()
@@ -111,4 +118,5 @@ func main() {
 
 	log.Println("✅ Сервер остановлен")
 
+	return nil
 }

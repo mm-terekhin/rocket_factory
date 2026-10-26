@@ -9,7 +9,6 @@ import (
 
 func (a *inventoryApi) CreatePart(ctx context.Context, req *inventoryV1.CreatePartRequest) (*inventoryV1.CreatePartResponse, error) {
 	resp, err := a.inventoryService.CreatePart(ctx, converter.PartInfoToModel(req.GetInfo()))
-
 	if err != nil {
 		return nil, err
 	}

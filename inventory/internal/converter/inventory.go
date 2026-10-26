@@ -8,7 +8,6 @@ import (
 )
 
 func FilterToModel(filter *inventoryV1.PartsFilter) model.PartsFilter {
-
 	categories := make([]model.Category, 0, len(filter.GetCategories()))
 
 	for _, category := range filter.GetCategories() {
@@ -52,7 +51,18 @@ func partInfoToProto(info model.PartInfo) *inventoryV1.PartInfo {
 }
 
 func partCategoryToProto(category model.Category) inventoryV1.Category {
-	return inventoryV1.Category(category)
+	switch category {
+	case model.CategoryEngine:
+		return inventoryV1.Category_CATEGORY_ENGINE
+	case model.CategoryFuel:
+		return inventoryV1.Category_CATEGORY_FUEL
+	case model.CategoryPorthole:
+		return inventoryV1.Category_CATEGORY_PORTHOLE
+	case model.CategoryWing:
+		return inventoryV1.Category_CATEGORY_WING
+	default:
+		return inventoryV1.Category_CATEGORY_UNSPECIFIED
+	}
 }
 
 func partDimensionsToProto(dimensions model.Dimensions) *inventoryV1.Dimensions {
@@ -129,12 +139,12 @@ func PartInfoToModel(info *inventoryV1.PartInfo) model.PartInfo {
 	}
 
 	return modelInfo
-
 }
 
 func InfoCategoryToModel(category inventoryV1.Category) model.Category {
-	return model.Category(category)
+	return partCategoryToModel(category)
 }
+
 func InfoDimensionsToModel(dimensions *inventoryV1.Dimensions) model.Dimensions {
 	return model.Dimensions{
 		Length: dimensions.GetLength(),

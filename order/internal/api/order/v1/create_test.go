@@ -17,12 +17,12 @@ func (s *APISuite) TestSuccessCreateOrder() {
 		Status:     string(model.StatusPendingPayment),
 	}
 
-	s.orderService.On("Create", s.ctx, model.CreateOrderData{
+	s.orderService.On("Create", testCtx(), model.CreateOrderData{
 		UserUUID:  userUUID,
 		PartUuids: []string{partUUID},
 	}).Return(order, nil)
 
-	res, err := s.api.CreateOrder(s.ctx, &orderV1.CreateOrderRequest{
+	res, err := s.api.CreateOrder(testCtx(), &orderV1.CreateOrderRequest{
 		UserUUID:  userUUID,
 		PartUuids: []string{partUUID},
 	})
@@ -35,10 +35,10 @@ func (s *APISuite) TestSuccessCreateOrder() {
 }
 
 func (s *APISuite) TestFailureCreateOrder_BadRequest() {
-	s.orderService.On("Create", s.ctx, model.CreateOrderData{}).
+	s.orderService.On("Create", testCtx(), model.CreateOrderData{}).
 		Return(nil, &model.InvalidArgumentError{Message: "user_uuid is required"})
 
-	res, err := s.api.CreateOrder(s.ctx, &orderV1.CreateOrderRequest{})
+	res, err := s.api.CreateOrder(testCtx(), &orderV1.CreateOrderRequest{})
 
 	s.Require().NoError(err)
 	br, ok := res.(*orderV1.BadRequestError)

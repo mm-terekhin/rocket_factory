@@ -12,12 +12,12 @@ func (s *APISuite) TestSuccessPayOrderByUUID() {
 	orderUUID := gofakeit.UUID()
 	txUUID := gofakeit.UUID()
 
-	s.orderService.On("Pay", s.ctx, model.PayOrderInput{
+	s.orderService.On("Pay", testCtx(), model.PayOrderInput{
 		OrderUUID:     orderUUID,
 		PaymentMethod: model.PaymentMethodCard,
 	}).Return(&txUUID, nil)
 
-	res, err := s.api.PayOrderByUUID(s.ctx, &orderV1.PayOrderRequest{
+	res, err := s.api.PayOrderByUUID(testCtx(), &orderV1.PayOrderRequest{
 		PaymentMethod: "CARD",
 	}, orderV1.PayOrderByUUIDParams{OrderUUID: orderUUID})
 
@@ -30,12 +30,12 @@ func (s *APISuite) TestSuccessPayOrderByUUID() {
 func (s *APISuite) TestFailurePayOrderByUUID_NotFound() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderService.On("Pay", s.ctx, model.PayOrderInput{
+	s.orderService.On("Pay", testCtx(), model.PayOrderInput{
 		OrderUUID:     orderUUID,
 		PaymentMethod: model.PaymentMethodUnspecified,
-	}).Return(nil, model.ErrorOrderNotFound)
+	}).Return(nil, model.ErrOrderNotFound)
 
-	res, err := s.api.PayOrderByUUID(s.ctx, &orderV1.PayOrderRequest{}, orderV1.PayOrderByUUIDParams{OrderUUID: orderUUID})
+	res, err := s.api.PayOrderByUUID(testCtx(), &orderV1.PayOrderRequest{}, orderV1.PayOrderByUUIDParams{OrderUUID: orderUUID})
 
 	s.Require().NoError(err)
 	nf, ok := res.(*orderV1.NotFoundError)
@@ -47,12 +47,12 @@ func (s *APISuite) TestFailurePayOrderByUUID_BadRequest() {
 	orderUUID := gofakeit.UUID()
 	grpcErr := status.Error(codes.InvalidArgument, "payment method is required")
 
-	s.orderService.On("Pay", s.ctx, model.PayOrderInput{
+	s.orderService.On("Pay", testCtx(), model.PayOrderInput{
 		OrderUUID:     orderUUID,
 		PaymentMethod: model.PaymentMethodUnspecified,
 	}).Return(nil, grpcErr)
 
-	res, err := s.api.PayOrderByUUID(s.ctx, &orderV1.PayOrderRequest{}, orderV1.PayOrderByUUIDParams{OrderUUID: orderUUID})
+	res, err := s.api.PayOrderByUUID(testCtx(), &orderV1.PayOrderRequest{}, orderV1.PayOrderByUUIDParams{OrderUUID: orderUUID})
 
 	s.Require().NoError(err)
 	br, ok := res.(*orderV1.BadRequestError)

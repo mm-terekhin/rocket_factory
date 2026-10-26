@@ -12,12 +12,14 @@ import (
 func badRequest(message string) *orderV1.BadRequestError {
 	return &orderV1.BadRequestError{Code: 400, Message: message}
 }
+
 func notFound(orderUUID string) *orderV1.NotFoundError {
 	return &orderV1.NotFoundError{
 		Code:    404,
 		Message: "Order for uuid'" + orderUUID + "' not found",
 	}
 }
+
 func conflict(message string) *orderV1.ConflictError {
 	return &orderV1.ConflictError{Code: 409, Message: message}
 }
@@ -26,11 +28,13 @@ func asInvalidArgument(err error) (*model.InvalidArgumentError, bool) {
 	var e *model.InvalidArgumentError
 	return e, errors.As(err, &e)
 }
+
 func isOrderNotFound(err error) bool {
-	return errors.Is(err, model.ErrorOrderNotFound)
+	return errors.Is(err, model.ErrOrderNotFound)
 }
+
 func isOrderConflict(err error) bool {
-	return errors.Is(err, model.ErrorOrderConflict)
+	return errors.Is(err, model.ErrOrderConflict)
 }
 
 func asGRPCBadRequest(err error) (*orderV1.BadRequestError, bool) {

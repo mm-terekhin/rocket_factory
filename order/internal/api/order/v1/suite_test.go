@@ -8,17 +8,18 @@ import (
 	"github.com/stretchr/testify/suite"
 )
 
+func testCtx() context.Context {
+	return context.Background()
+}
+
 type APISuite struct {
 	suite.Suite
-
-	ctx context.Context
 
 	orderService *mocks.OrderService
 	api          *orderApi
 }
 
 func (s *APISuite) SetupTest() {
-	s.ctx = context.Background()
 	s.orderService = mocks.NewOrderService(s.T())
 	s.api = NewApi(s.orderService)
 }

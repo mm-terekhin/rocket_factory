@@ -10,9 +10,9 @@ func (s *APISuite) TestSuccessCancelOrderByUUID() {
 	orderUUID := gofakeit.UUID()
 	order := &model.Order{OrderUUID: orderUUID, Status: string(model.StatusCancelled)}
 
-	s.orderService.On("Cancel", s.ctx, orderUUID).Return(order, nil)
+	s.orderService.On("Cancel", testCtx(), orderUUID).Return(order, nil)
 
-	res, err := s.api.CancelOrderByUUID(s.ctx, orderV1.CancelOrderByUUIDParams{OrderUUID: orderUUID})
+	res, err := s.api.CancelOrderByUUID(testCtx(), orderV1.CancelOrderByUUIDParams{OrderUUID: orderUUID})
 
 	s.Require().NoError(err)
 	s.Require().Nil(res)
@@ -21,9 +21,9 @@ func (s *APISuite) TestSuccessCancelOrderByUUID() {
 func (s *APISuite) TestFailureCancelOrderByUUID_NotFound() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderService.On("Cancel", s.ctx, orderUUID).Return(nil, model.ErrorOrderNotFound)
+	s.orderService.On("Cancel", testCtx(), orderUUID).Return(nil, model.ErrOrderNotFound)
 
-	res, err := s.api.CancelOrderByUUID(s.ctx, orderV1.CancelOrderByUUIDParams{OrderUUID: orderUUID})
+	res, err := s.api.CancelOrderByUUID(testCtx(), orderV1.CancelOrderByUUIDParams{OrderUUID: orderUUID})
 
 	s.Require().NoError(err)
 	nf, ok := res.(*orderV1.NotFoundError)
@@ -34,9 +34,9 @@ func (s *APISuite) TestFailureCancelOrderByUUID_NotFound() {
 func (s *APISuite) TestFailureCancelOrderByUUID_Conflict() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderService.On("Cancel", s.ctx, orderUUID).Return(nil, model.ErrorOrderConflict)
+	s.orderService.On("Cancel", testCtx(), orderUUID).Return(nil, model.ErrOrderConflict)
 
-	res, err := s.api.CancelOrderByUUID(s.ctx, orderV1.CancelOrderByUUIDParams{OrderUUID: orderUUID})
+	res, err := s.api.CancelOrderByUUID(testCtx(), orderV1.CancelOrderByUUIDParams{OrderUUID: orderUUID})
 
 	s.Require().NoError(err)
 	conf, ok := res.(*orderV1.ConflictError)

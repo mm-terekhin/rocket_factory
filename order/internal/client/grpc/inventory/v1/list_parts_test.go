@@ -12,7 +12,7 @@ func (s *ClientSuite) TestSuccessListParts() {
 	partUUID := gofakeit.UUID()
 	now := timestamppb.Now()
 
-	s.grpc.On("ListParts", s.ctx, mock.MatchedBy(func(req *inventoryV1.ListPartsRequest) bool {
+	s.grpc.On("ListParts", testCtx(), mock.MatchedBy(func(req *inventoryV1.ListPartsRequest) bool {
 		return len(req.GetFilter().GetUuids()) == 1 && req.GetFilter().GetUuids()[0] == partUUID
 	})).Return(&inventoryV1.ListPartsResponse{
 		Parts: []*inventoryV1.Part{
@@ -28,7 +28,7 @@ func (s *ClientSuite) TestSuccessListParts() {
 		},
 	}, nil)
 
-	parts, err := s.client.ListParts(s.ctx, model.PartsFilter{Uuids: []string{partUUID}})
+	parts, err := s.client.ListParts(testCtx(), model.PartsFilter{Uuids: []string{partUUID}})
 
 	s.Require().NoError(err)
 	s.Require().Len(parts, 1)
@@ -40,9 +40,9 @@ func (s *ClientSuite) TestFailureListParts() {
 	partUUID := gofakeit.UUID()
 	serviceErr := gofakeit.Error()
 
-	s.grpc.On("ListParts", s.ctx, mock.Anything).Return(nil, serviceErr)
+	s.grpc.On("ListParts", testCtx(), mock.Anything).Return(nil, serviceErr)
 
-	_, err := s.client.ListParts(s.ctx, model.PartsFilter{Uuids: []string{partUUID}})
+	_, err := s.client.ListParts(testCtx(), model.PartsFilter{Uuids: []string{partUUID}})
 
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, serviceErr)

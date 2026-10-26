@@ -17,5 +17,4 @@ func (a *orderApi) CreateOrder(ctx context.Context, req *orderV1.CreateOrderRequ
 		OrderUUID:  orderV1.NewOptString(resp.OrderUUID),
 		TotalPrice: orderV1.NewOptFloat64(resp.TotalPrice),
 	}, nil
-
 }

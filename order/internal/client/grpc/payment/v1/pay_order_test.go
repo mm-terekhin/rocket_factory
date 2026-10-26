@@ -12,13 +12,13 @@ func (s *ClientSuite) TestSuccessPayOrder() {
 	userUUID := gofakeit.UUID()
 	txUUID := gofakeit.UUID()
 
-	s.grpc.On("PayOrder", s.ctx, mock.MatchedBy(func(req *paymentV1.PayOrderRequest) bool {
+	s.grpc.On("PayOrder", testCtx(), mock.MatchedBy(func(req *paymentV1.PayOrderRequest) bool {
 		return req.GetOrderUuid() == orderUUID &&
 			req.GetUserUuid() == userUUID &&
 			req.GetPaymentMethod() == paymentV1.PaymentMethod_PAYMENT_METHOD_CARD
 	})).Return(&paymentV1.PayOrderResponse{TransactionUuid: txUUID}, nil)
 
-	res, err := s.client.PayOrder(s.ctx, model.PayOrderData{
+	res, err := s.client.PayOrder(testCtx(), model.PayOrderData{
 		OrderUUID:     orderUUID,
 		UserUuid:      userUUID,
 		PaymentMethod: model.PaymentMethodCard,
@@ -31,9 +31,9 @@ func (s *ClientSuite) TestSuccessPayOrder() {
 func (s *ClientSuite) TestFailurePayOrder() {
 	serviceErr := gofakeit.Error()
 
-	s.grpc.On("PayOrder", s.ctx, mock.Anything).Return(nil, serviceErr)
+	s.grpc.On("PayOrder", testCtx(), mock.Anything).Return(nil, serviceErr)
 
-	_, err := s.client.PayOrder(s.ctx, model.PayOrderData{
+	_, err := s.client.PayOrder(testCtx(), model.PayOrderData{
 		OrderUUID: gofakeit.UUID(),
 		UserUuid:  gofakeit.UUID(),
 	})

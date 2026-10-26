@@ -31,7 +31,7 @@ func PartToModel(inventoryPart *generatedInventoryV1.Part) model.Part {
 			Description:   inventoryPart.Info.Description,
 			Price:         inventoryPart.Info.Price,
 			StockQuantity: inventoryPart.Info.StockQuantity,
-			Category:      model.Category(inventoryPart.Info.Category),
+			Category:      categoryFromProto(inventoryPart.Info.Category),
 			Dimensions:    DimensionsToModel(inventoryPart.Info.Dimensions),
 			Manufacturer:  ManufacturerToModel(inventoryPart.Info.Manufacturer),
 			Tags:          inventoryPart.Info.Tags,
@@ -92,10 +92,40 @@ func MetadataToModel(metadata map[string]*generatedInventoryV1.Value) map[string
 	return res
 }
 
+func categoryFromProto(category generatedInventoryV1.Category) model.Category {
+	switch category {
+	case generatedInventoryV1.Category_CATEGORY_ENGINE:
+		return model.CategoryEngine
+	case generatedInventoryV1.Category_CATEGORY_FUEL:
+		return model.CategoryFuel
+	case generatedInventoryV1.Category_CATEGORY_PORTHOLE:
+		return model.CategoryPorthole
+	case generatedInventoryV1.Category_CATEGORY_WING:
+		return model.CategoryWing
+	default:
+		return 0
+	}
+}
+
+func categoryToProto(category model.Category) generatedInventoryV1.Category {
+	switch category {
+	case model.CategoryEngine:
+		return generatedInventoryV1.Category_CATEGORY_ENGINE
+	case model.CategoryFuel:
+		return generatedInventoryV1.Category_CATEGORY_FUEL
+	case model.CategoryPorthole:
+		return generatedInventoryV1.Category_CATEGORY_PORTHOLE
+	case model.CategoryWing:
+		return generatedInventoryV1.Category_CATEGORY_WING
+	default:
+		return generatedInventoryV1.Category_CATEGORY_UNSPECIFIED
+	}
+}
+
 func PartsFilterToProto(filter model.PartsFilter) *generatedInventoryV1.PartsFilter {
 	categories := make([]generatedInventoryV1.Category, 0, len(filter.Categories))
 	for _, category := range filter.Categories {
-		categories = append(categories, generatedInventoryV1.Category(category))
+		categories = append(categories, categoryToProto(category))
 	}
 
 	return &generatedInventoryV1.PartsFilter{

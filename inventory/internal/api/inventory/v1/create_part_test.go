@@ -2,7 +2,6 @@ package v1
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
-
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/converter"
 	inventoryV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/inventory/v1"
 )
@@ -49,8 +48,8 @@ func (s *APISuite) TestSuccessCreatePart() {
 
 	expectedModelInfo := converter.PartInfoToModel(info)
 
-	s.inventoryService.On("CreatePart", s.ctx, expectedModelInfo).Return(uuid, nil)
-	res, err := s.api.CreatePart(s.ctx, req)
+	s.inventoryService.On("CreatePart", testCtx(), expectedModelInfo).Return(uuid, nil)
+	res, err := s.api.CreatePart(testCtx(), req)
 
 	s.Require().NoError(err)
 	s.Require().NotEmpty(res)
@@ -100,8 +99,8 @@ func (s *APISuite) TestFailureCreatePart() {
 
 	expectedModelInfo := converter.PartInfoToModel(info)
 
-	s.inventoryService.On("CreatePart", s.ctx, expectedModelInfo).Return("", serviceErr)
-	res, err := s.api.CreatePart(s.ctx, req)
+	s.inventoryService.On("CreatePart", testCtx(), expectedModelInfo).Return("", serviceErr)
+	res, err := s.api.CreatePart(testCtx(), req)
 
 	s.Require().Error(err)
 	s.Require().Nil(res)

@@ -14,13 +14,13 @@ func (s *APISuite) TestSuccessPayOrder() {
 	userUUID := gofakeit.UUID()
 	txUUID := gofakeit.UUID()
 
-	s.paymentService.On("Pay", s.ctx, mock.MatchedBy(func(in model.PayOrderInput) bool {
+	s.paymentService.On("Pay", testCtx(), mock.MatchedBy(func(in model.PayOrderInput) bool {
 		return in.OrderUuid == orderUUID &&
 			in.UserUuid == userUUID &&
 			in.PaymentMethod == model.Card
 	})).Return(&txUUID, nil)
 
-	resp, err := s.api.PayOrder(s.ctx, &paymentV1.PayOrderRequest{
+	resp, err := s.api.PayOrder(testCtx(), &paymentV1.PayOrderRequest{
 		OrderUuid:     orderUUID,
 		UserUuid:      userUUID,
 		PaymentMethod: paymentV1.PaymentMethod_PAYMENT_METHOD_CARD,
@@ -35,11 +35,11 @@ func (s *APISuite) TestFailurePayOrder_InvalidArgument() {
 	orderUUID := gofakeit.UUID()
 	userUUID := gofakeit.UUID()
 
-	s.paymentService.On("Pay", s.ctx, mock.MatchedBy(func(in model.PayOrderInput) bool {
+	s.paymentService.On("Pay", testCtx(), mock.MatchedBy(func(in model.PayOrderInput) bool {
 		return in.OrderUuid == orderUUID && in.UserUuid == userUUID
 	})).Return(nil, &model.InvalidArgumentError{Message: "payment_method is inputuired"})
 
-	_, err := s.api.PayOrder(s.ctx, &paymentV1.PayOrderRequest{
+	_, err := s.api.PayOrder(testCtx(), &paymentV1.PayOrderRequest{
 		OrderUuid: orderUUID,
 		UserUuid:  userUUID,
 	})

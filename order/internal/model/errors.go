@@ -2,8 +2,10 @@ package model
 
 import "errors"
 
-var ErrorOrderNotFound = errors.New("Order not found")
-var ErrorOrderConflict = errors.New("The order has already been paid for and cannot be cancelled.")
+var (
+	ErrOrderNotFound = errors.New("order not found")
+	ErrOrderConflict = errors.New("the order has already been paid for and cannot be cancelled")
+)
 
 type InvalidArgumentError struct{ Message string }
 

@@ -12,9 +12,9 @@ func (s *ServiceSuite) TestSuccessListParts() {
 
 	parts := fakeParts(3)
 
-	s.inventoryRepository.On("ListParts", s.ctx, filter).Return(parts, nil)
+	s.inventoryRepository.On("ListParts", testCtx(), filter).Return(parts, nil)
 
-	res, err := s.service.ListParts(s.ctx, filter)
+	res, err := s.service.ListParts(testCtx(), filter)
 	s.Require().NoError(err)
 	s.Require().NotEmpty(res)
 	s.Require().Equal(res, parts)
@@ -25,9 +25,9 @@ func (s *ServiceSuite) TestFailureListParts() {
 	parts := make([]model.Part, 0)
 	serviceErr := gofakeit.Error()
 
-	s.inventoryRepository.On("ListParts", s.ctx, filter).Return(parts, serviceErr)
+	s.inventoryRepository.On("ListParts", testCtx(), filter).Return(parts, serviceErr)
 
-	res, err := s.service.ListParts(s.ctx, filter)
+	res, err := s.service.ListParts(testCtx(), filter)
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, serviceErr)
 	s.Require().Empty(res)

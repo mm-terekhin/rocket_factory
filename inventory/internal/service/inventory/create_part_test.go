@@ -2,12 +2,10 @@ package inventory
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
-
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 )
 
 func (s *ServiceSuite) TestSuccessCreatePart() {
-
 	info := model.PartInfo{
 		Name:          gofakeit.Name(),
 		Description:   gofakeit.ProductDescription(),
@@ -29,9 +27,9 @@ func (s *ServiceSuite) TestSuccessCreatePart() {
 
 	expectedUUID := gofakeit.UUID()
 
-	s.inventoryRepository.On("CreatePart", s.ctx, info).Return(expectedUUID, nil)
+	s.inventoryRepository.On("CreatePart", testCtx(), info).Return(expectedUUID, nil)
 
-	res, err := s.service.CreatePart(s.ctx, info)
+	res, err := s.service.CreatePart(testCtx(), info)
 
 	s.Require().NoError(err)
 	s.Require().NotNil(res)
@@ -39,7 +37,6 @@ func (s *ServiceSuite) TestSuccessCreatePart() {
 }
 
 func (s *ServiceSuite) TestFailureCreatePart() {
-
 	info := model.PartInfo{
 		Name:          gofakeit.Name(),
 		Description:   gofakeit.ProductDescription(),
@@ -63,9 +60,9 @@ func (s *ServiceSuite) TestFailureCreatePart() {
 
 	serviceErr := gofakeit.Error()
 
-	s.inventoryRepository.On("CreatePart", s.ctx, info).Return(expectedUUID, serviceErr)
+	s.inventoryRepository.On("CreatePart", testCtx(), info).Return(expectedUUID, serviceErr)
 
-	res, err := s.service.CreatePart(s.ctx, info)
+	res, err := s.service.CreatePart(testCtx(), info)
 
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, serviceErr)

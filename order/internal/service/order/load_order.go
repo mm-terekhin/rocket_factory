@@ -10,7 +10,7 @@ func (s *service) loadOrder(ctx context.Context, uuid string) (*model.Order, err
 	order := s.OrderRepository.GetOrder(ctx, uuid)
 
 	if order == nil {
-		return nil, model.ErrorOrderNotFound
+		return nil, model.ErrOrderNotFound
 	}
 
 	return order, nil

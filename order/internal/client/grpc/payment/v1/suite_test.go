@@ -4,11 +4,15 @@ import (
 	"context"
 	"testing"
 
+	paymentV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/payment/v1"
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/suite"
-	paymentV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/payment/v1"
 	"google.golang.org/grpc"
 )
+
+func testCtx() context.Context {
+	return context.Background()
+}
 
 type paymentGRPCMock struct {
 	mock.Mock
@@ -25,13 +29,11 @@ func (m *paymentGRPCMock) PayOrder(ctx context.Context, in *paymentV1.PayOrderRe
 type ClientSuite struct {
 	suite.Suite
 
-	ctx    context.Context
 	grpc   *paymentGRPCMock
 	client *client
 }
 
 func (s *ClientSuite) SetupTest() {
-	s.ctx = context.Background()
 	s.grpc = new(paymentGRPCMock)
 	s.client = NewClient(s.grpc)
 }
