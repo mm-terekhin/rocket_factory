@@ -1,0 +1,35 @@
+dir: "{{.InterfaceDir}}/mocks"
+filename: "mock_{{.InterfaceName}}.go"
+pkgname: "mocks"
+structname: "{{.InterfaceName}}"
+template: testify
+force-file-write: true
+
+packages:
+  github.com/mm-terekhin/rocket_factory/inventory/internal/service:
+    config:
+      include-interface-regex: ".*Service"
+
+  github.com/mm-terekhin/rocket_factory/inventory/internal/repository:
+    config:
+      include-interface-regex: ".*Repository"
+
+  github.com/mm-terekhin/rocket_factory/order/internal/service:
+    config:
+      include-interface-regex: ".*Service"
+
+  github.com/mm-terekhin/rocket_factory/order/internal/repository:
+    config:
+      include-interface-regex: ".*Repository"
+
+  github.com/mm-terekhin/rocket_factory/order/internal/client:
+    config:
+      include-interface-regex: ".*Client"
+
+  github.com/mm-terekhin/rocket_factory/payment/internal/service:
+    config:
+      include-interface-regex: ".*Service"
+
+  github.com/mm-terekhin/rocket_factory/payment/internal/repository:
+    config:
+      include-interface-regex: ".*Repository"
