@@ -17,7 +17,7 @@ func (s *ServiceSuite) TestSuccessCancel() {
 		Status:     string(model.StatusPendingPayment),
 	}
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order, nil)
 	s.orderRepository.On("UpdateOrder", testCtx(), mock.MatchedBy(func(o model.Order) bool {
 		return o.OrderUUID == orderUUID && o.Status == string(model.StatusCancelled)
 	})).Return(nil)
@@ -32,7 +32,7 @@ func (s *ServiceSuite) TestSuccessCancel() {
 func (s *ServiceSuite) TestFailureCancel_NotFound() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(nil)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(nil, model.ErrOrderNotFound)
 
 	res, err := s.service.Cancel(testCtx(), orderUUID)
 
@@ -48,7 +48,7 @@ func (s *ServiceSuite) TestFailureCancel_Conflict() {
 		Status:    string(model.StatusPaid),
 	}
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order, nil)
 
 	res, err := s.service.Cancel(testCtx(), orderUUID)
 
@@ -65,7 +65,7 @@ func (s *ServiceSuite) TestFailureCancel_UpdateError() {
 	}
 	serviceErr := gofakeit.Error()
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order, nil)
 	s.orderRepository.On("UpdateOrder", testCtx(), mock.Anything).Return(serviceErr)
 
 	res, err := s.service.Cancel(testCtx(), orderUUID)

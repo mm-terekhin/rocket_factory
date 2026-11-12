@@ -1,10 +1,20 @@
 package inventory
 
 import (
+	"reflect"
+
 	"github.com/brianvoe/gofakeit/v6"
+	"github.com/stretchr/testify/mock"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 )
+
+func partInfoMatcher(info model.PartInfo) any {
+	return mock.MatchedBy(func(p model.Part) bool {
+		return reflect.DeepEqual(p.Info, info) && p.UUID != "" && !p.CreatedAt.IsZero()
+	})
+}
 
 func (s *ServiceSuite) TestSuccessCreatePart() {
 	info := model.PartInfo{
@@ -26,15 +36,12 @@ func (s *ServiceSuite) TestSuccessCreatePart() {
 		},
 	}
 
-	expectedUUID := gofakeit.UUID()
-
-	s.inventoryRepository.On("CreatePart", testCtx(), info).Return(expectedUUID, nil)
+	s.inventoryRepository.On("CreatePart", testCtx(), partInfoMatcher(info)).Return(primitive.NewObjectID(), nil)
 
 	res, err := s.service.CreatePart(testCtx(), info)
 
 	s.Require().NoError(err)
-	s.Require().NotNil(res)
-	s.Require().Equal(expectedUUID, res)
+	s.Require().NotEmpty(res)
 }
 
 func (s *ServiceSuite) TestFailureCreatePart() {
@@ -57,15 +64,13 @@ func (s *ServiceSuite) TestFailureCreatePart() {
 		},
 	}
 
-	expectedUUID := gofakeit.UUID()
-
 	serviceErr := gofakeit.Error()
 
-	s.inventoryRepository.On("CreatePart", testCtx(), info).Return(expectedUUID, serviceErr)
+	s.inventoryRepository.On("CreatePart", testCtx(), partInfoMatcher(info)).Return(primitive.NilObjectID, serviceErr)
 
 	res, err := s.service.CreatePart(testCtx(), info)
 
 	s.Require().Error(err)
 	s.Require().ErrorIs(err, serviceErr)
-	s.Require().NotNil(res)
+	s.Require().Empty(res)
 }
