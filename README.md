@@ -1,4 +1,4 @@
-# microservices-boilerplate-v2
+# rocket-factory
 
 Для того чтобы вызывать команды из Taskfile, необходимо установить Taskfile CLI:
 

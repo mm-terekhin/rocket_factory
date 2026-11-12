@@ -3,7 +3,8 @@ package order
 import (
 	"context"
 	"fmt"
-	"uuid"
+
+	"github.com/google/uuid"
 
 	"github.com/mm-terekhin/rocket_factory/order/internal/model"
 )

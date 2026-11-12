@@ -3,7 +3,8 @@ package inventory
 import (
 	"context"
 	"time"
-	"uuid"
+
+	"github.com/google/uuid"
 
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 )

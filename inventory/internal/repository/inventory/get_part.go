@@ -4,11 +4,12 @@ import (
 	"context"
 	"errors"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/repository/converter"
 	repoModel "github.com/mm-terekhin/rocket_factory/inventory/internal/repository/model"
-	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 func (r *repository) GetPart(ctx context.Context, uuid string) (model.Part, error) {

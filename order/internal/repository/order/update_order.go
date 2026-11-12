@@ -22,7 +22,6 @@ func (r *repository) UpdateOrder(ctx context.Context, order model.Order) error {
 		repoOrder.TransactionUUID,
 		repoOrder.PaymentMethod,
 	)
-
 	if err != nil {
 		return err
 	}

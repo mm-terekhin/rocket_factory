@@ -3,7 +3,8 @@ package payment
 import (
 	"context"
 	"log"
-	"uuid"
+
+	"github.com/google/uuid"
 
 	"github.com/mm-terekhin/rocket_factory/payment/internal/model"
 )

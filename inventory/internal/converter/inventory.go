@@ -1,10 +1,11 @@
 package converter
 
 import (
+	"google.golang.org/protobuf/types/known/timestamppb"
+
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 	repoModel "github.com/mm-terekhin/rocket_factory/inventory/internal/repository/model"
 	inventoryV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/inventory/v1"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func FilterToModel(filter *inventoryV1.PartsFilter) model.PartsFilter {

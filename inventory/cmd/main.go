@@ -10,14 +10,15 @@ import (
 	"syscall"
 
 	"github.com/joho/godotenv"
-	inventoryApi "github.com/mm-terekhin/rocket_factory/inventory/internal/api/inventory/v1"
-	inventoryRepository "github.com/mm-terekhin/rocket_factory/inventory/internal/repository/inventory"
-	inventoryService "github.com/mm-terekhin/rocket_factory/inventory/internal/service/inventory"
-	inventoryV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/inventory/v1"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
+
+	inventoryApi "github.com/mm-terekhin/rocket_factory/inventory/internal/api/inventory/v1"
+	inventoryRepository "github.com/mm-terekhin/rocket_factory/inventory/internal/repository/inventory"
+	inventoryService "github.com/mm-terekhin/rocket_factory/inventory/internal/service/inventory"
+	inventoryV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/inventory/v1"
 )
 
 const grpcPort = 50051

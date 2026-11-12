@@ -2,6 +2,7 @@ package order
 
 import (
 	"github.com/jackc/pgx/v5"
+
 	def "github.com/mm-terekhin/rocket_factory/order/internal/repository"
 )
 

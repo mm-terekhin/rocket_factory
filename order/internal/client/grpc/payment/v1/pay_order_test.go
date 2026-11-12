@@ -2,9 +2,10 @@ package v1
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
+	"github.com/stretchr/testify/mock"
+
 	"github.com/mm-terekhin/rocket_factory/order/internal/model"
 	paymentV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/payment/v1"
-	"github.com/stretchr/testify/mock"
 )
 
 func (s *ClientSuite) TestSuccessPayOrder() {

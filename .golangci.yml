@@ -103,6 +103,6 @@ formatters: # Форматтеры кода (проверка стиля)
       sections: # Порядок группировки импортов
         - Standard  # Стандартная библиотека
         - Default   # Сторонние зависимости
-        - Prefix(github.com/mm-terekhin/microservices-boilerplate-v2)  # Локальные импорты проекта
+        - Prefix(github.com/mm-terekhin/rocket_factory)  # Локальные импорты проекта
       no-inline-comments: false  # Разрешить комментарии после импортов (true — запретит)
 

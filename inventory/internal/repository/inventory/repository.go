@@ -4,10 +4,11 @@ import (
 	"context"
 	"time"
 
-	def "github.com/mm-terekhin/rocket_factory/inventory/internal/repository"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	def "github.com/mm-terekhin/rocket_factory/inventory/internal/repository"
 )
 
 var _ def.InventoryRepository = (*repository)(nil)

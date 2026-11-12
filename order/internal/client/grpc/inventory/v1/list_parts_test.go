@@ -2,10 +2,11 @@ package v1
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/mm-terekhin/rocket_factory/order/internal/model"
-	inventoryV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/inventory/v1"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/mm-terekhin/rocket_factory/order/internal/model"
+	inventoryV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/inventory/v1"
 )
 
 func (s *ClientSuite) TestSuccessListParts() {

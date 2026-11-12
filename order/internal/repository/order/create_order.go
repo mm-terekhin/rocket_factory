@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"log"
 
 	"github.com/mm-terekhin/rocket_factory/order/internal/model"
 	"github.com/mm-terekhin/rocket_factory/order/internal/repository/converter"
@@ -12,7 +13,12 @@ func (r *repository) CreateOrder(ctx context.Context, order model.Order) error {
 	if err != nil {
 		return err
 	}
-	defer tx.Rollback(ctx)
+	defer func() {
+		cerr := tx.Rollback(ctx)
+		if cerr != nil {
+			log.Printf("failed to rollback transaction: %v\n", cerr)
+		}
+	}()
 
 	repoOrder := converter.OrderToRepo(order)
 
@@ -32,7 +38,6 @@ func (r *repository) CreateOrder(ctx context.Context, order model.Order) error {
 		); err != nil {
 			return err
 		}
-
 	}
 
 	return tx.Commit(ctx)

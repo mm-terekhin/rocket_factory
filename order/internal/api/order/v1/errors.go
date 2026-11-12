@@ -3,10 +3,11 @@ package v1
 import (
 	"errors"
 
-	"github.com/mm-terekhin/rocket_factory/order/internal/model"
-	orderV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/openapi/order/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/mm-terekhin/rocket_factory/order/internal/model"
+	orderV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/openapi/order/v1"
 )
 
 func badRequest(message string) *orderV1.BadRequestError {

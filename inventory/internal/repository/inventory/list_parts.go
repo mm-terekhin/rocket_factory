@@ -4,19 +4,12 @@ import (
 	"context"
 	"log"
 
+	"go.mongodb.org/mongo-driver/bson"
+
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/repository/converter"
 	repoModel "github.com/mm-terekhin/rocket_factory/inventory/internal/repository/model"
-	"go.mongodb.org/mongo-driver/bson"
 )
-
-type preparedFilter struct {
-	uuids      map[string]struct{}
-	names      map[string]struct{}
-	categories map[model.Category]struct{}
-	countries  map[string]struct{}
-	tags       map[string]struct{}
-}
 
 func (r *repository) ListParts(ctx context.Context, filter model.PartsFilter) ([]model.Part, error) {
 	cursor, err := r.parts.Find(ctx, partsFilterToBSON(filter))

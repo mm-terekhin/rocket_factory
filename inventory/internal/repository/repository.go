@@ -3,8 +3,9 @@ package repository
 import (
 	"context"
 
-	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
+	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 )
 
 type InventoryRepository interface {
