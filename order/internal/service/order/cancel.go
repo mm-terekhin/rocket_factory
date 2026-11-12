@@ -7,7 +7,10 @@ import (
 )
 
 func (s *service) Cancel(ctx context.Context, uuid string) (*model.Order, error) {
-	order := s.OrderRepository.GetOrder(ctx, uuid)
+	order, err := s.OrderRepository.GetOrder(ctx, uuid)
+	if err != nil {
+		return nil, err
+	}
 	if order == nil {
 		return nil, model.ErrOrderNotFound
 	}

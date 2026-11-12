@@ -8,10 +8,32 @@ import (
 )
 
 func (r *repository) CreateOrder(ctx context.Context, order model.Order) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+	tx, err := r.con.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
 
-	r.orders[order.OrderUUID] = converter.OrderToRepo(order)
+	repoOrder := converter.OrderToRepo(order)
 
-	return nil
+	if _, err := tx.Exec(
+		ctx,
+		"INSERT INTO orders (order_uuid, user_uuid, total_price, transaction_uuid, payment_method, status) VALUES ($1, $2, $3, $4, $5, $6)",
+		repoOrder.OrderUUID, repoOrder.UserUUID, repoOrder.TotalPrice, repoOrder.TransactionUUID, repoOrder.PaymentMethod, repoOrder.Status,
+	); err != nil {
+		return err
+	}
+
+	for _, part := range repoOrder.PartUuids {
+		if _, err := r.con.Exec(
+			ctx,
+			"INSERT INTO order_parts (part_uuid, order_uuid) VALUES ($1, $2)",
+			part, repoOrder.OrderUUID,
+		); err != nil {
+			return err
+		}
+
+	}
+
+	return tx.Commit(ctx)
 }

@@ -28,11 +28,16 @@ func partCategoryToModel(category inventoryV1.Category) model.Category {
 }
 
 func PartToProto(part model.Part) *inventoryV1.Part {
+	var updatedAt *timestamppb.Timestamp
+	if part.UpdatedAt != nil {
+		updatedAt = timestamppb.New(*part.UpdatedAt)
+	}
+
 	return &inventoryV1.Part{
 		Uuid:      part.UUID,
 		Info:      partInfoToProto(part.Info),
 		CreatedAt: timestamppb.New(part.CreatedAt),
-		UpdatedAt: timestamppb.New(*part.UpdatedAt),
+		UpdatedAt: updatedAt,
 	}
 }
 
@@ -159,6 +164,15 @@ func InfoManufacturerToModel(manufacturer *inventoryV1.Manufacturer) model.Manuf
 		Name:    manufacturer.GetName(),
 		Country: manufacturer.GetCountry(),
 		Website: manufacturer.GetWebsite(),
+	}
+}
+
+func PartToRepo(part model.Part) repoModel.Part {
+	return repoModel.Part{
+		UUID:      part.UUID,
+		Info:      PartInfoToRepo(part.Info),
+		CreatedAt: part.CreatedAt,
+		UpdatedAt: part.UpdatedAt,
 	}
 }
 

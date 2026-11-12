@@ -2,30 +2,20 @@ package inventory
 
 import (
 	"context"
-	"time"
-	"uuid"
 
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/converter"
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
-	repoModel "github.com/mm-terekhin/rocket_factory/inventory/internal/repository/model"
-	"github.com/samber/lo"
+
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func (r *repository) CreatePart(_ context.Context, info model.PartInfo) (string, error) {
-	id := uuid.New().String()
-	now := time.Now()
+func (r *repository) CreatePart(ctx context.Context, part model.Part) (primitive.ObjectID, error) {
+	repoPart := converter.PartToRepo(part)
 
-	part := repoModel.Part{
-		UUID:      id,
-		CreatedAt: now,
-		Info:      converter.PartInfoToRepo(info),
-		UpdatedAt: lo.ToPtr(now),
+	res, err := r.parts.InsertOne(ctx, repoPart)
+	if err != nil {
+		return primitive.NilObjectID, err
 	}
 
-	r.mu.Lock()
-	defer r.mu.Unlock()
-
-	r.parts[id] = part
-
-	return id, nil
+	return res.InsertedID.(primitive.ObjectID), nil
 }

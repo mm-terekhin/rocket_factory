@@ -7,7 +7,7 @@ import (
 )
 
 type OrderRepository interface {
-	GetOrder(context.Context, string) *model.Order
+	GetOrder(context.Context, string) (*model.Order, error)
 	UpdateOrder(context.Context, model.Order) error
 	CreateOrder(context.Context, model.Order) error
 }

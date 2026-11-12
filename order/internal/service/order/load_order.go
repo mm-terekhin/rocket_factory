@@ -7,9 +7,8 @@ import (
 )
 
 func (s *service) loadOrder(ctx context.Context, uuid string) (*model.Order, error) {
-	order := s.OrderRepository.GetOrder(ctx, uuid)
-
-	if order == nil {
+	order, err := s.OrderRepository.GetOrder(ctx, uuid)
+	if err != nil {
 		return nil, model.ErrOrderNotFound
 	}
 

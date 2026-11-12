@@ -105,7 +105,7 @@ func (_c *OrderRepository_CreateOrder_Call) RunAndReturn(run func(context1 conte
 }
 
 // GetOrder provides a mock function for the type OrderRepository
-func (_mock *OrderRepository) GetOrder(context1 context.Context, s string) *model.Order {
+func (_mock *OrderRepository) GetOrder(context1 context.Context, s string) (*model.Order, error) {
 	ret := _mock.Called(context1, s)
 
 	if len(ret) == 0 {
@@ -113,6 +113,10 @@ func (_mock *OrderRepository) GetOrder(context1 context.Context, s string) *mode
 	}
 
 	var r0 *model.Order
+	var r1 error
+	if returnFunc, ok := ret.Get(0).(func(context.Context, string) (*model.Order, error)); ok {
+		return returnFunc(context1, s)
+	}
 	if returnFunc, ok := ret.Get(0).(func(context.Context, string) *model.Order); ok {
 		r0 = returnFunc(context1, s)
 	} else {
@@ -120,7 +124,12 @@ func (_mock *OrderRepository) GetOrder(context1 context.Context, s string) *mode
 			r0 = ret.Get(0).(*model.Order)
 		}
 	}
-	return r0
+	if returnFunc, ok := ret.Get(1).(func(context.Context, string) error); ok {
+		r1 = returnFunc(context1, s)
+	} else {
+		r1 = ret.Error(1)
+	}
+	return r0, r1
 }
 
 // OrderRepository_GetOrder_Call is a *mock.Call that shadows Run/Return methods with type explicit version for method 'GetOrder'
@@ -153,12 +162,12 @@ func (_c *OrderRepository_GetOrder_Call) Run(run func(context1 context.Context, 
 	return _c
 }
 
-func (_c *OrderRepository_GetOrder_Call) Return(order *model.Order) *OrderRepository_GetOrder_Call {
-	_c.Call.Return(order)
+func (_c *OrderRepository_GetOrder_Call) Return(order *model.Order, err error) *OrderRepository_GetOrder_Call {
+	_c.Call.Return(order, err)
 	return _c
 }
 
-func (_c *OrderRepository_GetOrder_Call) RunAndReturn(run func(context1 context.Context, s string) *model.Order) *OrderRepository_GetOrder_Call {
+func (_c *OrderRepository_GetOrder_Call) RunAndReturn(run func(context1 context.Context, s string) (*model.Order, error)) *OrderRepository_GetOrder_Call {
 	_c.Call.Return(run)
 	return _c
 }
