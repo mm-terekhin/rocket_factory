@@ -9,6 +9,7 @@ import (
 
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 	mock "github.com/stretchr/testify/mock"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // NewInventoryRepository creates a new instance of InventoryRepository. It also registers a testing interface on the mock and a cleanup function to assert the mocks expectations.
@@ -48,25 +49,27 @@ func (_m *InventoryRepository) EXPECT() *InventoryRepository_Expecter {
 }
 
 // CreatePart provides a mock function for the type InventoryRepository
-func (_mock *InventoryRepository) CreatePart(context1 context.Context, partInfo model.PartInfo) (string, error) {
-	ret := _mock.Called(context1, partInfo)
+func (_mock *InventoryRepository) CreatePart(context1 context.Context, part model.Part) (primitive.ObjectID, error) {
+	ret := _mock.Called(context1, part)
 
 	if len(ret) == 0 {
 		panic("no return value specified for CreatePart")
 	}
 
-	var r0 string
+	var r0 primitive.ObjectID
 	var r1 error
-	if returnFunc, ok := ret.Get(0).(func(context.Context, model.PartInfo) (string, error)); ok {
-		return returnFunc(context1, partInfo)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, model.Part) (primitive.ObjectID, error)); ok {
+		return returnFunc(context1, part)
 	}
-	if returnFunc, ok := ret.Get(0).(func(context.Context, model.PartInfo) string); ok {
-		r0 = returnFunc(context1, partInfo)
+	if returnFunc, ok := ret.Get(0).(func(context.Context, model.Part) primitive.ObjectID); ok {
+		r0 = returnFunc(context1, part)
 	} else {
-		r0 = ret.Get(0).(string)
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(primitive.ObjectID)
+		}
 	}
-	if returnFunc, ok := ret.Get(1).(func(context.Context, model.PartInfo) error); ok {
-		r1 = returnFunc(context1, partInfo)
+	if returnFunc, ok := ret.Get(1).(func(context.Context, model.Part) error); ok {
+		r1 = returnFunc(context1, part)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -80,20 +83,20 @@ type InventoryRepository_CreatePart_Call struct {
 
 // CreatePart is a helper method to define mock.On call
 //   - context1 context.Context
-//   - partInfo model.PartInfo
-func (_e *InventoryRepository_Expecter) CreatePart(context1 any, partInfo any) *InventoryRepository_CreatePart_Call {
-	return &InventoryRepository_CreatePart_Call{Call: _e.mock.On("CreatePart", context1, partInfo)}
+//   - part model.Part
+func (_e *InventoryRepository_Expecter) CreatePart(context1 any, part any) *InventoryRepository_CreatePart_Call {
+	return &InventoryRepository_CreatePart_Call{Call: _e.mock.On("CreatePart", context1, part)}
 }
 
-func (_c *InventoryRepository_CreatePart_Call) Run(run func(context1 context.Context, partInfo model.PartInfo)) *InventoryRepository_CreatePart_Call {
+func (_c *InventoryRepository_CreatePart_Call) Run(run func(context1 context.Context, part model.Part)) *InventoryRepository_CreatePart_Call {
 	_c.Call.Run(func(args mock.Arguments) {
 		var arg0 context.Context
 		if args[0] != nil {
 			arg0 = args[0].(context.Context)
 		}
-		var arg1 model.PartInfo
+		var arg1 model.Part
 		if args[1] != nil {
-			arg1 = args[1].(model.PartInfo)
+			arg1 = args[1].(model.Part)
 		}
 		run(
 			arg0,
@@ -103,12 +106,12 @@ func (_c *InventoryRepository_CreatePart_Call) Run(run func(context1 context.Con
 	return _c
 }
 
-func (_c *InventoryRepository_CreatePart_Call) Return(s string, err error) *InventoryRepository_CreatePart_Call {
-	_c.Call.Return(s, err)
+func (_c *InventoryRepository_CreatePart_Call) Return(objectID primitive.ObjectID, err error) *InventoryRepository_CreatePart_Call {
+	_c.Call.Return(objectID, err)
 	return _c
 }
 
-func (_c *InventoryRepository_CreatePart_Call) RunAndReturn(run func(context1 context.Context, partInfo model.PartInfo) (string, error)) *InventoryRepository_CreatePart_Call {
+func (_c *InventoryRepository_CreatePart_Call) RunAndReturn(run func(context1 context.Context, part model.Part) (primitive.ObjectID, error)) *InventoryRepository_CreatePart_Call {
 	_c.Call.Return(run)
 	return _c
 }

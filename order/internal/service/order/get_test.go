@@ -2,6 +2,7 @@ package order
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
+
 	"github.com/mm-terekhin/rocket_factory/order/internal/model"
 )
 
@@ -15,7 +16,7 @@ func (s *ServiceSuite) TestSuccessGet() {
 		Status:     string(model.StatusPendingPayment),
 	}
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(expected)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(expected, nil)
 
 	res, err := s.service.Get(testCtx(), orderUUID)
 
@@ -26,7 +27,7 @@ func (s *ServiceSuite) TestSuccessGet() {
 func (s *ServiceSuite) TestFailureGet_NotFound() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(nil)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(nil, model.ErrOrderNotFound)
 
 	res, err := s.service.Get(testCtx(), orderUUID)
 

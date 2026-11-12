@@ -2,121 +2,64 @@ package inventory
 
 import (
 	"context"
+	"log"
+
+	"go.mongodb.org/mongo-driver/bson"
 
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/repository/converter"
+	repoModel "github.com/mm-terekhin/rocket_factory/inventory/internal/repository/model"
 )
 
-type preparedFilter struct {
-	uuids      map[string]struct{}
-	names      map[string]struct{}
-	categories map[model.Category]struct{}
-	countries  map[string]struct{}
-	tags       map[string]struct{}
-}
-
 func (r *repository) ListParts(ctx context.Context, filter model.PartsFilter) ([]model.Part, error) {
-	r.mu.RLock()
-	defer r.mu.RUnlock()
-
-	pf := prepareFilter(&filter)
-
-	out := make([]model.Part, 0, len(r.parts))
-	for _, part := range r.parts {
-		partModel := converter.PartToModel(part)
-
-		if matches(&partModel, pf) {
-			out = append(out, partModel)
+	cursor, err := r.parts.Find(ctx, partsFilterToBSON(filter))
+	if err != nil {
+		return make([]model.Part, 0), err
+	}
+	defer func() {
+		cerr := cursor.Close(ctx)
+		if cerr != nil {
+			log.Printf("failed to close cursor: %v\n", cerr)
 		}
+	}()
+
+	var parts []repoModel.Part
+	err = cursor.All(ctx, &parts)
+	if err != nil {
+		return nil, err
+	}
+
+	out := make([]model.Part, 0, len(parts))
+	for _, part := range parts {
+		partModel := converter.PartToModel(part)
+		out = append(out, partModel)
 	}
 
 	return out, nil
 }
 
-func prepareFilter(f *model.PartsFilter) preparedFilter {
-	pf := preparedFilter{}
+func partsFilterToBSON(f model.PartsFilter) bson.M {
+	query := bson.M{}
 
 	if len(f.UUIDs) > 0 {
-		pf.uuids = toStringSet(f.UUIDs)
+		query["uuid"] = bson.M{"$in": f.UUIDs}
 	}
-
 	if len(f.Names) > 0 {
-		pf.names = toStringSet(f.Names)
+		query["info.name"] = bson.M{"$in": f.Names}
 	}
-
 	if len(f.Categories) > 0 {
-		pf.categories = toCategorySet(f.Categories)
+		cats := make([]int, 0, len(f.Categories))
+		for _, c := range f.Categories {
+			cats = append(cats, int(c))
+		}
+		query["info.category"] = bson.M{"$in": cats}
 	}
-
 	if len(f.ManufacturerCountries) > 0 {
-		pf.countries = toStringSet(f.ManufacturerCountries)
+		query["info.manufacturer.country"] = bson.M{"$in": f.ManufacturerCountries}
 	}
-
 	if len(f.Tags) > 0 {
-		pf.tags = toStringSet(f.Tags)
+		query["info.tags"] = bson.M{"$in": f.Tags}
 	}
 
-	return pf
-}
-
-func toStringSet(items []string) map[string]struct{} {
-	m := make(map[string]struct{}, len(items))
-
-	for _, s := range items {
-		m[s] = struct{}{}
-	}
-
-	return m
-}
-
-func toCategorySet(items []model.Category) map[model.Category]struct{} {
-	m := make(map[model.Category]struct{}, len(items))
-
-	for _, s := range items {
-		m[s] = struct{}{}
-	}
-
-	return m
-}
-
-func matches(part *model.Part, pf preparedFilter) bool {
-	if len(pf.uuids) > 0 {
-		if _, ok := pf.uuids[part.UUID]; !ok {
-			return false
-		}
-	}
-
-	if len(pf.names) > 0 {
-		if _, ok := pf.names[part.Info.Name]; !ok {
-			return false
-		}
-	}
-
-	if len(pf.categories) > 0 {
-		if _, ok := pf.categories[part.Info.Category]; !ok {
-			return false
-		}
-	}
-
-	if len(pf.countries) > 0 {
-		if _, ok := pf.countries[part.Info.Manufacturer.Country]; !ok {
-			return false
-		}
-	}
-
-	if len(pf.tags) > 0 {
-		matched := false
-		for _, t := range part.Info.Tags {
-			if _, ok := pf.tags[t]; ok {
-				matched = true
-				break
-			}
-		}
-
-		if !matched {
-			return false
-		}
-	}
-
-	return true
+	return query
 }

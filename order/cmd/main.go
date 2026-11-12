@@ -14,16 +14,21 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/stdlib"
+	"github.com/joho/godotenv"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
+
 	orderApi "github.com/mm-terekhin/rocket_factory/order/internal/api/order/v1"
 	invClient "github.com/mm-terekhin/rocket_factory/order/internal/client/grpc/inventory/v1"
 	payClient "github.com/mm-terekhin/rocket_factory/order/internal/client/grpc/payment/v1"
+	"github.com/mm-terekhin/rocket_factory/order/internal/migrator"
 	orderRepository "github.com/mm-terekhin/rocket_factory/order/internal/repository/order"
 	orderService "github.com/mm-terekhin/rocket_factory/order/internal/service/order"
 	orderV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/openapi/order/v1"
 	inventoryV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/inventory/v1"
 	paymentV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/payment/v1"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 )
 
 const (
@@ -41,6 +46,15 @@ func main() {
 }
 
 func run() error {
+	ctx := context.Background()
+
+	err := godotenv.Load(".env")
+	if err != nil {
+		return err
+	}
+
+	dbURI := os.Getenv("DB_URI")
+
 	invConn, err := grpc.NewClient(
 		inventoryAddress,
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
@@ -71,7 +85,31 @@ func run() error {
 
 	payment := payClient.NewClient(paymentV1.NewPaymentServiceClient(payConn))
 
-	repo := orderRepository.NewRepository()
+	con, err := pgx.Connect(ctx, dbURI)
+	if err != nil {
+		return err
+	}
+	defer func() {
+		cerr := con.Close(ctx)
+		if cerr != nil {
+			log.Printf("failed to close connection: %v\n", cerr)
+		}
+	}()
+
+	err = con.Ping(ctx)
+	if err != nil {
+		return err
+	}
+
+	migrationsDir := os.Getenv("MIGRATIONS_DIR")
+	migratorRunner := migrator.NewMigrator(stdlib.OpenDB(*con.Config().Copy()), migrationsDir)
+
+	err = migratorRunner.Up()
+	if err != nil {
+		return err
+	}
+
+	repo := orderRepository.NewRepository(con)
 	service := orderService.NewService(repo, inventory, payment)
 	api := orderApi.NewApi(service)
 

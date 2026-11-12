@@ -2,8 +2,9 @@ package order
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/mm-terekhin/rocket_factory/order/internal/model"
 	"github.com/stretchr/testify/mock"
+
+	"github.com/mm-terekhin/rocket_factory/order/internal/model"
 )
 
 func (s *ServiceSuite) TestSuccessPay() {
@@ -16,7 +17,7 @@ func (s *ServiceSuite) TestSuccessPay() {
 		Status:    string(model.StatusPendingPayment),
 	}
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order, nil)
 	s.paymentClient.On("PayOrder", testCtx(), model.PayOrderData{
 		OrderUUID:     orderUUID,
 		UserUuid:      userUUID,
@@ -42,7 +43,7 @@ func (s *ServiceSuite) TestSuccessPay() {
 func (s *ServiceSuite) TestFailurePay_NotFound() {
 	orderUUID := gofakeit.UUID()
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(nil)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(nil, model.ErrOrderNotFound)
 
 	res, err := s.service.Pay(testCtx(), model.PayOrderInput{OrderUUID: orderUUID})
 
@@ -56,7 +57,7 @@ func (s *ServiceSuite) TestFailurePay_PaymentError() {
 	order := &model.Order{OrderUUID: orderUUID, UserUUID: gofakeit.UUID()}
 	serviceErr := gofakeit.Error()
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order, nil)
 	s.paymentClient.On("PayOrder", testCtx(), mock.Anything).Return("", serviceErr)
 
 	res, err := s.service.Pay(testCtx(), model.PayOrderInput{OrderUUID: orderUUID})
@@ -73,7 +74,7 @@ func (s *ServiceSuite) TestFailurePay_UpdateError() {
 	order := &model.Order{OrderUUID: orderUUID, UserUUID: userUUID}
 	serviceErr := gofakeit.Error()
 
-	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order)
+	s.orderRepository.On("GetOrder", testCtx(), orderUUID).Return(order, nil)
 	s.paymentClient.On("PayOrder", testCtx(), mock.Anything).Return(txUUID, nil)
 	s.orderRepository.On("UpdateOrder", testCtx(), mock.Anything).Return(serviceErr)
 

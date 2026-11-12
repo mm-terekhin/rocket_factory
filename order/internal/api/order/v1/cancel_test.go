@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
+
 	"github.com/mm-terekhin/rocket_factory/order/internal/model"
 	orderV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/openapi/order/v1"
 )

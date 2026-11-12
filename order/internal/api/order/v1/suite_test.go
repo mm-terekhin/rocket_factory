@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	"github.com/mm-terekhin/rocket_factory/order/internal/service/mocks"
 	"github.com/stretchr/testify/suite"
+
+	"github.com/mm-terekhin/rocket_factory/order/internal/service/mocks"
 )
 
 func testCtx() context.Context {

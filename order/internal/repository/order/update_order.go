@@ -8,16 +8,27 @@ import (
 )
 
 func (r *repository) UpdateOrder(ctx context.Context, order model.Order) error {
-	r.mu.Lock()
-	defer r.mu.Unlock()
+	repoOrder := converter.OrderToRepo(order)
 
-	_, ok := r.orders[order.OrderUUID]
-
-	if !ok {
-		return model.ErrOrderNotFound
+	tag, err := r.con.Exec(ctx, `
+		UPDATE orders
+		SET status = $2,
+		transaction_uuid = $3,
+		payment_method = $4
+		WHERE order_uuid = $1
+	`,
+		repoOrder.OrderUUID,
+		repoOrder.Status,
+		repoOrder.TransactionUUID,
+		repoOrder.PaymentMethod,
+	)
+	if err != nil {
+		return err
 	}
 
-	r.orders[order.OrderUUID] = converter.OrderToRepo(order)
+	if tag.RowsAffected() == 0 {
+		return model.ErrOrderNotFound
+	}
 
 	return nil
 }

@@ -2,11 +2,12 @@ package v1
 
 import (
 	"github.com/brianvoe/gofakeit/v6"
-	"github.com/mm-terekhin/rocket_factory/payment/internal/model"
-	paymentV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/payment/v1"
 	"github.com/stretchr/testify/mock"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	"github.com/mm-terekhin/rocket_factory/payment/internal/model"
+	paymentV1 "github.com/mm-terekhin/rocket_factory/shared/pkg/proto/payment/v1"
 )
 
 func (s *APISuite) TestSuccessPayOrder() {

@@ -2,15 +2,27 @@ package inventory
 
 import (
 	"context"
+	"time"
+
+	"github.com/google/uuid"
 
 	"github.com/mm-terekhin/rocket_factory/inventory/internal/model"
 )
 
 func (s *service) CreatePart(ctx context.Context, info model.PartInfo) (string, error) {
-	uuid, err := s.InventoryRepository.CreatePart(ctx, info)
+	partUUID := uuid.New().String()
+	now := time.Now()
+
+	part := model.Part{
+		UUID:      partUUID,
+		Info:      info,
+		CreatedAt: now,
+	}
+
+	_, err := s.InventoryRepository.CreatePart(ctx, part)
 	if err != nil {
 		return "", err
 	}
 
-	return uuid, nil
+	return partUUID, nil
 }
